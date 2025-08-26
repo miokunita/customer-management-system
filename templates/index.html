@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顧客管理システム</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .nav-tab {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .nav-tab.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .sub-nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+        
+        .sub-nav-tab {
+            padding: 8px 16px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .sub-nav-tab.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .results-section, .admin-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .admin-section {
+            padding: 20px;
+        }
+        
+        .customer-detail {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .search-input {
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+        }
+        
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .customer-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .customer-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .customer-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .customer-item:last-child {
+            border-bottom: none;
+        }
+        
+        .customer-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .customer-meta {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .appointment-list {
+            margin-top: 20px;
+        }
+        
+        .appointment-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .appointment-date {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .appointment-status {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .admin-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .admin-card h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .customer-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ログイン画面 -->
+    <div id="loginSection" class="login-container">
+        <h2 style="text-align: center; margin-bottom: 30px; color: #333;">顧客管理システム</h2>
+        <div id="loginError" class="error hidden"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">ユーザー名</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">ログイン</button>
+        </form>
+        <div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 4px; font-size: 12px; color: #666;">
+            <strong>初期ログイン情報:</strong><br>
+            ユーザー名: admin<br>
+            パスワード: admin123<br><br>
+            <a href="#" id="forgotPasswordLink" style="color: #007bff; text-decoration: none;">パスワードをお忘れの場合</a>
+        </div>
+    </div>
+
+    <!-- メイン画面 -->
+    <div id="mainSection" class="container hidden">
+        <!-- ヘッダー -->
+        <div class="header">
+            <h1>顧客管理システム</h1>
+            <div>
+                <span id="userInfo" style="margin-right: 20px; color: #666;"></span>
+                <button id="addCustomerBtn" class="btn btn-success" style="margin-right: 10px;">新規登録</button>
+                <button id="logoutBtn" class="btn btn-secondary">ログアウト</button>
+            </div>
+        </div>
+
+        <!-- ナビゲーションタブ -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="customers">検索</button>
+            <button class="nav-tab" data-tab="admin" id="adminTabBtn" style="display: none;">システム管理</button>
+        </div>
+
+        <!-- 顧客管理タブ -->
+        <div id="customersTab" class="tab-content">
+            <!-- 検索セクション -->
+            <div class="search-section">
+                <div class="form-group">
+                    <input type="text" id="searchInput" class="search-input" placeholder="顧客名、SNS ID、メモなどで検索...">
+                </div>
+            </div>
+
+            <!-- 検索結果 -->
+            <div class="results-section">
+                <ul id="customerList" class="customer-list">
+                    <li class="loading">検索結果がここに表示されます</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 管理タブ -->
+        <div id="adminTabContent" class="tab-content hidden">
+            <!-- サブナビゲーションタブ -->
+            <div class="sub-nav-tabs">
+                <button class="sub-nav-tab active" data-subtab="users">ユーザー管理</button>
+                <button class="sub-nav-tab" data-subtab="pulldown">プルダウン管理</button>
+            </div>
+
+            <!-- ユーザー管理サブタブ -->
+            <div id="usersSubTab" class="sub-tab-content">
+                <div class="admin-section">
+                    <div class="admin-card">
+                        <h3>ユーザー管理</h3>
+                        <button id="addUserBtn" class="btn btn-success">新規ユーザー追加</button>
+                        <table class="table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>ユーザー名</th>
+                                    <th>氏名</th>
+                                    <th>メール</th>
+                                    <th>事業</th>
+                                    <th>権限</th>
+                                    <th>ステータス</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr><td colspan="7" class="loading">読み込み中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- プルダウン管理サブタブ -->
+            <div id="pulldownSubTab" class="sub-tab-content hidden">
+                <div class="admin-section">
+                    <div class="admin-card">
+                        <h3>事業管理</h3>
+                        <button id="addBusinessBtn" class="btn btn-success">新規事業追加</button>
+                        <table class="table" id="businessTable">
+                            <thead>
+                                <tr>
+                                    <th>名前</th>
+                                    <th>説明</th>
+                                    <th>表示順</th>
+                                    <th>ステータス</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="businessTableBody">
+                                <tr><td colspan="5" class="loading">読み込み中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="admin-card">
+                        <h3>SNS媒体管理</h3>
+                        <button id="addSnsMediaBtn" class="btn btn-success">新規媒体追加</button>
+                        <table class="table" id="snsMediaTable">
+                            <thead>
+                                <tr>
+                                    <th>名前</th>
+                                    <th>表示順</th>
+                                    <th>ステータス</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="snsMediaTableBody">
+                                <tr><td colspan="4" class="loading">読み込み中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="admin-card">
+                        <h3>顧客ステータス管理</h3>
+                        <button id="addStatusBtn" class="btn btn-success">新規ステータス追加</button>
+                        <table class="table" id="statusTable">
+                            <thead>
+                                <tr>
+                                    <th>名前</th>
+                                    <th>説明</th>
+                                    <th>色</th>
+                                    <th>表示順</th>
+                                    <th>ステータス</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="statusTableBody">
+                                <tr><td colspan="6" class="loading">読み込み中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 顧客詳細画面 -->
+    <div id="customerDetailSection" class="container hidden">
+        <div class="customer-detail">
+            <button id="backToSearchBtn" class="btn btn-secondary" style="margin-bottom: 20px;">← 検索に戻る</button>
+            <div id="customerDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- 新規顧客登録モーダル -->
+    <div id="addCustomerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeAddCustomerModal">&times;</span>
+            <h2>新規顧客登録</h2>
+            <div id="addCustomerError" class="error hidden"></div>
+            <form id="addCustomerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newSnsMedia">SNS媒体</label>
+                        <select id="newSnsMedia" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newSnsId">SNS ID</label>
+                        <input type="text" id="newSnsId" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newRealName">本名</label>
+                        <input type="text" id="newRealName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newStatus">ステータス</label>
+                        <select id="newStatus" required></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="newNotes">メモ</label>
+                    <textarea id="newNotes" placeholder="任意でメモを入力..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">登録</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 履歴追加モーダル -->
+    <div id="addAppointmentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeAddAppointmentModal">&times;</span>
+            <h2>履歴追加</h2>
+            <div id="addAppointmentError" class="error hidden"></div>
+            <form id="addAppointmentForm">
+                <div class="form-group">
+                    <label for="appointmentStatus">ステータス</label>
+                    <select id="appointmentStatus" required onchange="toggleAppointmentFields()"></select>
+                </div>
+                <div id="appointmentDateFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="appointmentDate">実施日</label>
+                        <input type="date" id="appointmentDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentTime">実施時間</label>
+                        <input type="time" id="appointmentTime">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="staffName">実施者名</label>
+                    <input type="text" id="staffName" required>
+                </div>
+                <div class="form-group">
+                    <label for="resultContent">詳細</label>
+                    <textarea id="resultContent" placeholder="詳細な内容を入力..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">追加</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ユーザー追加/編集モーダル -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeUserModal">&times;</span>
+            <h2 id="userModalTitle">新規ユーザー追加</h2>
+            <div id="userModalError" class="error hidden"></div>
+            <form id="userForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userUsername">ユーザー名</label>
+                        <input type="text" id="userUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userFullName">氏名</label>
+                        <input type="text" id="userFullName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userEmail">メールアドレス</label>
+                        <input type="email" id="userEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userBusiness">事業</label>
+                        <select id="userBusiness" required></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userRole">権限</label>
+                        <select id="userRole" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPassword">パスワード</label>
+                        <input type="password" id="userPassword" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 事業追加/編集モーダル -->
+    <div id="businessModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeBusinessModal">&times;</span>
+            <h2 id="businessModalTitle">新規事業追加</h2>
+            <div id="businessModalError" class="error hidden"></div>
+            <form id="businessForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="businessName">事業名</label>
+                        <input type="text" id="businessName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="businessSortOrder">表示順</label>
+                        <input type="number" id="businessSortOrder" min="0" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="businessDescription">説明</label>
+                    <input type="text" id="businessDescription" placeholder="事業の説明">
+                </div>
+                <div class="form-group">
+                    <label for="businessActive">ステータス</label>
+                    <select id="businessActive">
+                        <option value="true">有効</option>
+                        <option value="false">無効</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SNS媒体追加/編集モーダル -->
+    <div id="snsMediaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeSnsMediaModal">&times;</span>
+            <h2 id="snsMediaModalTitle">新規SNS媒体追加</h2>
+            <div id="snsMediaModalError" class="error hidden"></div>
+            <form id="snsMediaForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="mediaName">媒体名</label>
+                        <input type="text" id="mediaName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mediaSortOrder">表示順</label>
+                        <input type="number" id="mediaSortOrder" min="0" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="mediaActive">ステータス</label>
+                    <select id="mediaActive">
+                        <option value="true">有効</option>
+                        <option value="false">無効</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 顧客ステータス追加/編集モーダル -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeStatusModal">&times;</span>
+            <h2 id="statusModalTitle">新規ステータス追加</h2>
+            <div id="statusModalError" class="error hidden"></div>
+            <form id="statusForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="statusName">ステータス名</label>
+                        <input type="text" id="statusName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="statusColor">色</label>
+                        <input type="color" id="statusColor" value="#007bff">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="statusDescription">説明</label>
+                    <input type="text" id="statusDescription" placeholder="ステータスの説明">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="statusSortOrder">表示順</label>
+                        <input type="number" id="statusSortOrder" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="statusActive">ステータス</label>
+                        <select id="statusActive">
+                            <option value="true">有効</option>
+                            <option value="false">無効</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- パスワードリセットモーダル -->
+    <div id="passwordResetModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closePasswordResetModal">&times;</span>
+            <h2>パスワードリセット</h2>
+            <div id="passwordResetInfo" class="success">
+                管理者にパスワードリセットを依頼してください。<br>
+                管理者は「システム管理」→「ユーザー管理」から<br>
+                該当ユーザーのパスワードを変更できます。
+            </div>
+            <button class="btn btn-secondary" onclick="document.getElementById('passwordResetModal').style.display='none'">閉じる</button>
+        </div>
+    </div>
+
+    <script>
+        // グローバル変数
+        let authToken = localStorage.getItem('authToken');
+        let currentUser = null;
+        let currentCustomerId = null;
+        let currentEditingId = null;
+        let snsMediaOptions = [];
+        let statusOptions = [];
+        let roleOptions = [];
+        let businessOptions = [];
+        let appointmentStatusOptions = [];
+
+        // API呼び出し用のヘルパー関数
+        async function apiCall(url, options = {}) {
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(authToken && { 'Authorization': `Bearer ${authToken}` })
+                }
+            };
+            
+            const response = await fetch(url, { ...defaultOptions, ...options });
+            
+            if (response.status === 401) {
+                logout();
+                return;
+            }
+            
+            return response;
+        }
+
+        // タブ切り替え機能
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const target = this.getAttribute('data-tab');
+                    
+                    // アクティブタブの切り替え
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // コンテンツの切り替え
+                    contents.forEach(content => content.classList.add('hidden'));
+                    if (target === 'admin') {
+                        document.getElementById('adminTabContent').classList.remove('hidden');
+                        // 管理者権限チェック後に管理データ読み込み
+                        if (currentUser && currentUser.role_name === '管理者') {
+                            loadAdminData();
+                        }
+                    } else {
+                        document.getElementById(target + 'Tab').classList.remove('hidden');
+                    }
+                });
+            });
+
+            // サブタブ切り替え機能
+            const subTabs = document.querySelectorAll('.sub-nav-tab');
+            const subContents = document.querySelectorAll('.sub-tab-content');
+            
+            subTabs.forEach(subTab => {
+                subTab.addEventListener('click', function() {
+                    const subTarget = this.getAttribute('data-subtab');
+                    
+                    // アクティブサブタブの切り替え
+                    subTabs.forEach(st => st.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // サブコンテンツの切り替え
+                    subContents.forEach(content => content.classList.add('hidden'));
+                    document.getElementById(subTarget + 'SubTab').classList.remove('hidden');
+                });
+            });
+        });
+
+        // パスワードリセットリンクイベント
+        document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('passwordResetModal').style.display = 'block';
+        });
+
+        document.getElementById('closePasswordResetModal').addEventListener('click', () => {
+            document.getElementById('passwordResetModal').style.display = 'none';
+        });
+
+        // ステータス選択時のフィールド表示切替
+        function toggleAppointmentFields() {
+            const status = document.getElementById('appointmentStatus').value;
+            const dateFields = document.getElementById('appointmentDateFields');
+            const dateInput = document.getElementById('appointmentDate');
+            const timeInput = document.getElementById('appointmentTime');
+            
+            if (status === 'アポ実施' || status === '成約') {
+                dateFields.style.display = 'block';
+                dateInput.required = true;
+                timeInput.required = true;
+            } else {
+                dateFields.style.display = 'none';
+                dateInput.required = false;
+                timeInput.required = false;
+                dateInput.value = '';
+                timeInput.value = '';
+            }
+        }
+
+        // 履歴削除関数
+        async function deleteAppointment(appointmentId) {
+            if (!confirm('この履歴を削除してもよろしいですか？')) return;
+            
+            try {
+                const response = await apiCall(`/api/appointment/${appointmentId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response && response.ok) {
+                    await showCustomerDetail(currentCustomerId);
+                    showSuccess('履歴を削除しました');
+                } else {
+                    const error = await response.json();
+                    showError('', error.detail || '履歴の削除に失敗しました');
+                }
+            } catch (error) {
+                showError('', 'サーバーエラーが発生しました');
+            }
+        }
+
+        // ログイン処理
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    authToken = data.access_token;
+                    localStorage.setItem('authToken', authToken);
+                    await loadCurrentUser();
+                    showMainSection();
+                } else {
+                    const error = await response.json();
+                    showError('loginError', error.detail || 'ログインに失敗しました');
+                }
+            } catch (error) {
+                showError('loginError', 'サーバーに接続できません');
+            }
+        });
+
+        // 現在のユーザー情報取得
+        async function loadCurrentUser() {
+            try {
+                const response = await apiCall('/api/me');
+                if (response && response.ok) {
+                    currentUser = await response.json();
+                    document.getElementById('userInfo').textContent = 
+                        `${currentUser.full_name} (${currentUser.role_name})`;
+                    
+                    // 管理者の場合のみ管理タブを表示
+                    const adminTabBtn = document.getElementById('adminTabBtn');
+                    if (currentUser.role_name === '管理者') {
+                        adminTabBtn.style.display = 'inline-block';
+                    } else {
+                        adminTabBtn.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('ユーザー情報の取得に失敗:', error);
+            }
+        }
+
+        // ログアウト処理
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('mainSection').classList.add('hidden');
+            document.getElementById('customerDetailSection').classList.add('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            // 管理タブを隠す
+            document.getElementById('adminTabBtn').style.display = 'none';
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // メイン画面表示
+        async function showMainSection() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('mainSection').classList.remove('hidden');
+            document.getElementById('customerDetailSection').classList.add('hidden');
+            
+            await loadOptions();
+            await loadAppointmentStatusOptions();
+            await searchCustomers();
+        }
+
+        // 選択肢データ読み込み
+        async function loadOptions() {
+            try {
+                const [snsResponse, statusResponse, roleResponse, businessResponse] = await Promise.all([
+                    apiCall('/api/sns-media'),
+                    apiCall('/api/customer-status'),
+                    currentUser && currentUser.role_name === '管理者' ? apiCall('/api/admin/roles') : null,
+                    apiCall('/api/business')
+                ]);
+                
+                if (snsResponse && snsResponse.ok && statusResponse && statusResponse.ok) {
+                    snsMediaOptions = await snsResponse.json();
+                    statusOptions = await statusResponse.json();
+                    
+                    populateSelect('newSnsMedia', snsMediaOptions);
+                    populateSelect('newStatus', statusOptions);
+                }
+                
+                if (roleResponse && roleResponse.ok) {
+                    roleOptions = await roleResponse.json();
+                    populateSelect('userRole', roleOptions);
+                }
+                
+                if (businessResponse && businessResponse.ok) {
+                    businessOptions = await businessResponse.json();
+                    populateSelect('userBusiness', businessOptions);
+                }
+            } catch (error) {
+                console.error('選択肢の読み込みに失敗:', error);
+            }
+        }
+
+        // アポ用ステータス選択肢読み込み
+        async function loadAppointmentStatusOptions() {
+            try {
+                const response = await apiCall('/api/customer-status');
+                if (response && response.ok) {
+                    const customerStatuses = await response.json();
+                    
+                    // アポステータス用のカスタム選択肢
+                    const customStatuses = [
+                        { id: 'アポ実施', name: 'アポ実施' },
+                        { id: '成約', name: '成約' },
+                        { id: '見送り', name: '見送り' },
+                        { id: '再訪問予定', name: '再訪問予定' },
+                        { id: '商談中', name: '商談中' },
+                        { id: '保留', name: '保留' }
+                    ];
+                    
+                    appointmentStatusOptions = [...customerStatuses, ...customStatuses];
+                    
+                    // appointmentStatusのselect要素に選択肢を設定
+                    populateSelect('appointmentStatus', appointmentStatusOptions);
+                }
+            } catch (error) {
+                console.error('アポステータス選択肢の読み込みに失敗:', error);
+            }
+        }
+
+        // セレクトボックス設定
+        function populateSelect(selectId, options) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">選択してください</option>';
+            
+            if (!Array.isArray(options)) {
+                console.error('populateSelect: options is not an array', options);
+                return;
+            }
+            
+            options.forEach(option => {
+                if (!option || typeof option !== 'object') {
+                    console.error('populateSelect: invalid option', option);
+                    return;
+                }
+                
+                const optionElement = document.createElement('option');
+                
+                // IDとnameの値を適切に設定
+                if (selectId === 'newSnsMedia' || selectId === 'newStatus') {
+                    // 顧客登録用（IDが必要）
+                    optionElement.value = option.id;
+                } else if (selectId === 'appointmentStatus') {
+                    // 履歴追加用（名前を使用）
+                    optionElement.value = option.name;
+                } else {
+                    // その他（IDを使用）
+                    optionElement.value = option.id;
+                }
+                
+                optionElement.textContent = option.name || 'Unknown';
+                select.appendChild(optionElement);
+            });
+        }
+
+        // 管理データ読み込み
+        async function loadAdminData() {
+            try {
+                await Promise.all([
+                    loadUsers(),
+                    loadSnsMediaAdmin(), 
+                    loadBusinessAdmin(),
+                    loadStatusAdmin()
+                ]);
+            } catch (error) {
+                console.error('管理データの読み込みエラー:', error);
+            }
+        }
+
+        // ユーザー管理データ読み込み
+        async function loadUsers() {
+            try {
+                const response = await apiCall('/api/admin/users');
+                if (response && response.ok) {
+                    const users = await response.json();
+                    const tbody = document.getElementById('usersTableBody');
+                    
+                    if (users.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7">ユーザーが登録されていません</td></tr>';
+                    } else {
+                        tbody.innerHTML = users.map(user => `
+                            <tr>
+                                <td>${escapeHtml(user.username)}</td>
+                                <td>${escapeHtml(user.full_name)}</td>
+                                <td>${escapeHtml(user.email)}</td>
+                                <td>${escapeHtml(user.business_name || '-')}</td>
+                                <td>${escapeHtml(user.role_name)}</td>
+                                <td>${user.is_active ? '有効' : '無効'}</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" onclick="editUser(${user.id})">編集</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id})" ${user.id === currentUser.id ? 'disabled' : ''}>削除</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="7">読み込みエラー</td></tr>';
+            }
+        }
+
+        // 事業管理データ読み込み
+        async function loadBusinessAdmin() {
+            try {
+                const response = await apiCall('/api/admin/business');
+                if (response && response.ok) {
+                    const businesses = await response.json();
+                    const tbody = document.getElementById('businessTableBody');
+                    
+                    if (businesses.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5">事業が登録されていません</td></tr>';
+                    } else {
+                        tbody.innerHTML = businesses.map(b => `
+                            <tr>
+                                <td>${escapeHtml(b.name)}</td>
+                                <td>${escapeHtml(b.description || '-')}</td>
+                                <td>${b.sort_order}</td>
+                                <td>${b.is_active ? '有効' : '無効'}</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" onclick="editBusiness(${b.id})">編集</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteBusiness(${b.id})">削除</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                document.getElementById('businessTableBody').innerHTML = '<tr><td colspan="5">読み込みエラー</td></tr>';
+            }
+        }
+
+        // SNS媒体管理データ読み込み
+        async function loadSnsMediaAdmin() {
+            try {
+                const response = await apiCall('/api/admin/sns-media');
+                if (response && response.ok) {
+                    const media = await response.json();
+                    const tbody = document.getElementById('snsMediaTableBody');
+                    
+                    if (media.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4">SNS媒体が登録されていません</td></tr>';
+                    } else {
+                        tbody.innerHTML = media.map(m => `
+                            <tr>
+                                <td>${escapeHtml(m.name)}</td>
+                                <td>${m.sort_order}</td>
+                                <td>${m.is_active ? '有効' : '無効'}</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" onclick="editSnsMedia(${m.id})">編集</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteSnsMedia(${m.id})">削除</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                document.getElementById('snsMediaTableBody').innerHTML = '<tr><td colspan="4">読み込みエラー</td></tr>';
+            }
+        }
+
+        // ステータス管理データ読み込み
+        async function loadStatusAdmin() {
+            try {
+                const response = await apiCall('/api/admin/customer-status');
+                if (response && response.ok) {
+                    const statuses = await response.json();
+                    const tbody = document.getElementById('statusTableBody');
+                    
+                    if (statuses.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6">ステータスが登録されていません</td></tr>';
+                    } else {
+                        tbody.innerHTML = statuses.map(s => `
+                            <tr>
+                                <td>${escapeHtml(s.name)}</td>
+                                <td>${escapeHtml(s.description)}</td>
+                                <td><span style="background-color: ${s.color_code}; color: white; padding: 4px 8px; border-radius: 4px;">${s.color_code}</span></td>
+                                <td>${s.sort_order}</td>
+                                <td>${s.is_active ? '有効' : '無効'}</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" onclick="editStatus(${s.id})">編集</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteStatus(${s.id})">削除</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                document.getElementById('statusTableBody').innerHTML = '<tr><td colspan="6">読み込みエラー</td></tr>';
+            }
+        }
+
+        // 事業管理イベント
+        document.getElementById('addBusinessBtn').addEventListener('click', () => {
+            currentEditingId = null;
+            document.getElementById('businessModalTitle').textContent = '新規事業追加';
+            document.getElementById('businessForm').reset();
+            document.getElementById('businessModal').style.display = 'block';
+        });
+
+        document.getElementById('businessForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('businessName').value,
+                description: document.getElementById('businessDescription').value,
+                sort_order: parseInt(document.getElementById('businessSortOrder').value),
+                is_active: document.getElementById('businessActive').value === 'true'
+            };
+            
+            try {
+                const url = currentEditingId ? `/api/admin/business/${currentEditingId}` : '/api/admin/business';
+                const method = currentEditingId ? 'PUT' : 'POST';
+                
+                const response = await apiCall(url, {
+                    method: method,
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response && response.ok) {
+                    document.getElementById('businessModal').style.display = 'none';
+                    await loadBusinessAdmin();
+                    await loadOptions(); // 選択肢も更新
+                    showSuccess(currentEditingId ? '事業を更新しました' : '事業を追加しました');
+                } else {
+                    const error = await response.json();
+                    showError('businessModalError', error.detail || '操作に失敗しました');
+                }
+            } catch (error) {
+                showError('businessModalError', 'サーバーエラーが発生しました');
+            }
+        });
+
+        // 事業編集
+        async function editBusiness(businessId) {
+            try {
+                const response = await apiCall('/api/admin/business');
+                if (response && response.ok) {
+                    const businesses = await response.json();
+                    const item = businesses.find(b => b.id === businessId);
+                    
+                    if (item) {
+                        currentEditingId = businessId;
+                        document.getElementById('businessModalTitle').textContent = '事業編集';
+                        document.getElementById('businessName').value = item.name;
+                        document.getElementById('businessDescription').value = item.description || '';
+                        document.getElementById('businessSortOrder').value = item.sort_order;
+                        document.getElementById('businessActive').value = item.is_active.toString();
+                        document.getElementById('businessModal').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                showError('', '事業情報の取得に失敗しました');
+            }
+        }
+
+        // 事業削除
+        async function deleteBusiness(businessId) {
+            if (!confirm('この事業を削除してもよろしいですか？')) return;
+            
+            try {
+                const response = await apiCall(`/api/admin/business/${businessId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response && response.ok) {
+                    await loadBusinessAdmin();
+                    await loadOptions(); // 選択肢も更新
+                    showSuccess('事業を削除しました');
+                } else {
+                    const error = await response.json();
+                    showError('', error.detail || '事業の削除に失敗しました');
+                }
+            } catch (error) {
+                showError('', 'サーバーエラーが発生しました');
+            }
+        }
+
+        document.getElementById('closeBusinessModal').addEventListener('click', () => {
+            document.getElementById('businessModal').style.display = 'none';
+        });
+
+        // ユーザー管理イベント
+        document.getElementById('addUserBtn').addEventListener('click', () => {
+            currentEditingId = null;
+            document.getElementById('userModalTitle').textContent = '新規ユーザー追加';
+            document.getElementById('userForm').reset();
+            document.getElementById('userModal').style.display = 'block';
+        });
+
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                username: document.getElementById('userUsername').value,
+                full_name: document.getElementById('userFullName').value,
+                email: document.getElementById('userEmail').value,
+                password: document.getElementById('userPassword').value,
+                role_id: parseInt(document.getElementById('userRole').value),
+                business_id: parseInt(document.getElementById('userBusiness').value)
+            };
+            
+            try {
+                const url = currentEditingId ? `/api/admin/users/${currentEditingId}` : '/api/admin/users';
+                const method = currentEditingId ? 'PUT' : 'POST';
+                
+                const response = await apiCall(url, {
+                    method: method,
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response && response.ok) {
+                    document.getElementById('userModal').style.display = 'none';
+                    await loadUsers();
+                    showSuccess(currentEditingId ? 'ユーザー情報を更新しました' : 'ユーザーを追加しました');
+                } else {
+                    const error = await response.json();
+                    showError('userModalError', error.detail || '操作に失敗しました');
+                }
+            } catch (error) {
+                showError('userModalError', 'サーバーエラーが発生しました');
+            }
+        });
+
+        // ユーザー編集
+        async function editUser(userId) {
+            try {
+                const response = await apiCall(`/api/admin/users`);
+                if (response && response.ok) {
+                    const users = await response.json();
+                    const user = users.find(u => u.id === userId);
+                    
+                    if (user) {
+                        currentEditingId = userId;
+                        document.getElementById('userModalTitle').textContent = 'ユーザー編集';
+                        document.getElementById('userUsername').value = user.username;
+                        document.getElementById('userFullName').value = user.full_name;
+                        document.getElementById('userEmail').value = user.email;
+                        document.getElementById('userRole').value = user.role_id;
+                        document.getElementById('userBusiness').value = user.business_id;
+                        document.getElementById('userPassword').value = '';
+                        document.getElementById('userModal').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                showError('', 'ユーザー情報の取得に失敗しました');
+            }
+        }
+
+        // ユーザー削除
+        async function deleteUser(userId) {
+            if (!confirm('このユーザーを削除してもよろしいですか？')) return;
+            
+            try {
+                const response = await apiCall(`/api/admin/users/${userId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response && response.ok) {
+                    await loadUsers();
+                    showSuccess('ユーザーを削除しました');
+                } else {
+                    const error = await response.json();
+                    showError('', error.detail || 'ユーザーの削除に失敗しました');
+                }
+            } catch (error) {
+                showError('', 'サーバーエラーが発生しました');
+            }
+        }
+
+        // SNS媒体管理イベント
+        document.getElementById('addSnsMediaBtn').addEventListener('click', () => {
+            currentEditingId = null;
+            document.getElementById('snsMediaModalTitle').textContent = '新規SNS媒体追加';
+            document.getElementById('snsMediaForm').reset();
+            document.getElementById('snsMediaModal').style.display = 'block';
+        });
+
+        document.getElementById('snsMediaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('mediaName').value,
+                icon: '', // アイコンは設定しない
+                sort_order: parseInt(document.getElementById('mediaSortOrder').value),
+                is_active: document.getElementById('mediaActive').value === 'true'
+            };
+            
+            try {
+                const url = currentEditingId ? `/api/admin/sns-media/${currentEditingId}` : '/api/admin/sns-media';
+                const method = currentEditingId ? 'PUT' : 'POST';
+                
+                const response = await apiCall(url, {
+                    method: method,
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response && response.ok) {
+                    document.getElementById('snsMediaModal').style.display = 'none';
+                    await loadSnsMediaAdmin();
+                    await loadOptions(); // 選択肢も更新
+                    showSuccess(currentEditingId ? 'SNS媒体を更新しました' : 'SNS媒体を追加しました');
+                } else {
+                    const error = await response.json();
+                    showError('snsMediaModalError', error.detail || '操作に失敗しました');
+                }
+            } catch (error) {
+                showError('snsMediaModalError', 'サーバーエラーが発生しました');
+            }
+        });
+
+        // SNS媒体編集
+        async function editSnsMedia(mediaId) {
+            try {
+                const response = await apiCall('/api/admin/sns-media');
+                if (response && response.ok) {
+                    const media = await response.json();
+                    const item = media.find(m => m.id === mediaId);
+                    
+                    if (item) {
+                        currentEditingId = mediaId;
+                        document.getElementById('snsMediaModalTitle').textContent = 'SNS媒体編集';
+                        document.getElementById('mediaName').value = item.name;
+                        document.getElementById('mediaSortOrder').value = item.sort_order;
+                        document.getElementById('mediaActive').value = item.is_active.toString();
+                        document.getElementById('snsMediaModal').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                showError('', 'SNS媒体情報の取得に失敗しました');
+            }
+        }
+
+        // SNS媒体削除
+        async function deleteSnsMedia(mediaId) {
+            if (!confirm('このSNS媒体を削除してもよろしいですか？')) return;
+            
+            try {
+                const response = await apiCall(`/api/admin/sns-media/${mediaId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response && response.ok) {
+                    await loadSnsMediaAdmin();
+                    await loadOptions(); // 選択肢も更新
+                    showSuccess('SNS媒体を削除しました');
+                } else {
+                    const error = await response.json();
+                    showError('', error.detail || 'SNS媒体の削除に失敗しました');
+                }
+            } catch (error) {
+                showError('', 'サーバーエラーが発生しました');
+            }
+        }
+
+        // ステータス管理イベント
+        document.getElementById('addStatusBtn').addEventListener('click', () => {
+            currentEditingId = null;
+            document.getElementById('statusModalTitle').textContent = '新規ステータス追加';
+            document.getElementById('statusForm').reset();
+            document.getElementById('statusModal').style.display = 'block';
+        });
+
+        document.getElementById('statusForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('statusName').value,
+                color_code: document.getElementById('statusColor').value,
+                description: document.getElementById('statusDescription').value,
+                sort_order: parseInt(document.getElementById('statusSortOrder').value),
+                is_active: document.getElementById('statusActive').value === 'true'
+            };
+            
+            try {
+                const url = currentEditingId ? `/api/admin/customer-status/${currentEditingId}` : '/api/admin/customer-status';
+                const method = currentEditingId ? 'PUT' : 'POST';
+                
+                const response = await apiCall(url, {
+                    method: method,
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response && response.ok) {
+                    document.getElementById('statusModal').style.display = 'none';
+                    await loadStatusAdmin();
+                    await loadOptions(); // 選択肢も更新
+                    await loadAppointmentStatusOptions(); // アポ用も更新
+                    showSuccess(currentEditingId ? 'ステータスを更新しました' : 'ステータスを追加しました');
+                } else {
+                    const error = await response.json();
+                    showError('statusModalError', error.detail || '操作に失敗しました');
+                }
+            } catch (error) {
+                showError('statusModalError', 'サーバーエラーが発生しました');
+            }
+        });
+
+        // ステータス編集
+        async function editStatus(statusId) {
+            try {
+                const response = await apiCall('/api/admin/customer-status');
+                if (response && response.ok) {
+                    const statuses = await response.json();
+                    const item = statuses.find(s => s.id === statusId);
+                    
+                    if (item) {
+                        currentEditingId = statusId;
+                        document.getElementById('statusModalTitle').textContent = 'ステータス編集';
+                        document.getElementById('statusName').value = item.name;
+                        document.getElementById('statusColor').value = item.color_code;
+                        document.getElementById('statusDescription').value = item.description;
+                        document.getElementById('statusSortOrder').value = item.sort_order;
+                        document.getElementById('statusActive').value = item.is_active.toString();
+                        document.getElementById('statusModal').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                showError('', 'ステータス情報の取得に失敗しました');
+            }
+        }
+
+        // ステータス削除
+        async function deleteStatus(statusId) {
+            if (!confirm('このステータスを削除してもよろしいですか？')) return;
+            
+            try {
+                const response = await apiCall(`/api/admin/customer-status/${statusId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response && response.ok) {
+                    await loadStatusAdmin();
+                    await loadOptions(); // 選択肢も更新
+                    await loadAppointmentStatusOptions(); // アポ用も更新
+                    showSuccess('ステータスを削除しました');
+                } else {
+                    const error = await response.json();
+                    showError('', error.detail || 'ステータスの削除に失敗しました');
+                }
+            } catch (error) {
+                showError('', 'サーバーエラーが発生しました');
+            }
+        }
+
+        // モーダル閉じるイベント
+        document.getElementById('closeUserModal').addEventListener('click', () => {
+            document.getElementById('userModal').style.display = 'none';
+        });
+
+        document.getElementById('closeSnsMediaModal').addEventListener('click', () => {
+            document.getElementById('snsMediaModal').style.display = 'none';
+        });
+
+        document.getElementById('closeStatusModal').addEventListener('click', () => {
+            document.getElementById('statusModal').style.display = 'none';
+        });
+
+        // 検索処理
+        async function searchCustomers(query = '') {
+            const customerList = document.getElementById('customerList');
+            customerList.innerHTML = '<li class="loading">検索中...</li>';
+            
+            try {
+                const response = await apiCall(`/api/search?q=${encodeURIComponent(query)}`);
+                if (response && response.ok) {
+                    const customers = await response.json();
+                    displayCustomers(customers);
+                } else {
+                    customerList.innerHTML = '<li class="loading">検索に失敗しました</li>';
+                }
+            } catch (error) {
+                customerList.innerHTML = '<li class="loading">サーバーエラーが発生しました</li>';
+            }
+        }
+
+        // 顧客リスト表示
+        function displayCustomers(customers) {
+            const customerList = document.getElementById('customerList');
+            
+            if (customers.length === 0) {
+                customerList.innerHTML = '<li class="loading">該当する顧客が見つかりませんでした</li>';
+                return;
+            }
+            
+            customerList.innerHTML = '';
+            customers.forEach(customer => {
+                const li = document.createElement('li');
+                li.className = 'customer-item';
+                li.onclick = () => showCustomerDetail(customer.id);
+                
+                const statusColor = statusOptions.find(s => s.name === customer.status_name)?.color_code || '#6b7280';
+                
+                li.innerHTML = `
+                    <div class="customer-info">
+                        <h3>${escapeHtml(customer.real_name)}</h3>
+                        <div class="customer-meta">
+                            ${escapeHtml(customer.sns_media_name)}: ${escapeHtml(customer.sns_id)} | 
+                            登録日: ${formatDate(customer.registration_date)}
+                        </div>
+                    </div>
+                    <span class="status-badge" style="background-color: ${statusColor}">
+                        ${escapeHtml(customer.status_name)}
+                    </span>
+                `;
+                
+                customerList.appendChild(li);
+            });
+        }
+
+        // 顧客詳細表示
+        async function showCustomerDetail(customerId) {
+            currentCustomerId = customerId;
+            document.getElementById('mainSection').classList.add('hidden');
+            document.getElementById('customerDetailSection').classList.remove('hidden');
+            
+            const content = document.getElementById('customerDetailContent');
+            content.innerHTML = '<div class="loading">読み込み中...</div>';
+            
+            try {
+                const response = await apiCall(`/api/customer/${customerId}`);
+                if (response && response.ok) {
+                    const customer = await response.json();
+                    displayCustomerDetail(customer);
+                } else {
+                    content.innerHTML = '<div class="error">顧客情報の取得に失敗しました</div>';
+                }
+            } catch (error) {
+                content.innerHTML = '<div class="error">サーバーエラーが発生しました</div>';
+            }
+        }
+
+        // 顧客詳細内容表示
+        function displayCustomerDetail(customer) {
+            const content = document.getElementById('customerDetailContent');
+            const statusColor = statusOptions.find(s => s.id === customer.status_id)?.color_code || '#6b7280';
+            
+            content.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                    <div>
+                        <h2>${escapeHtml(customer.real_name)}</h2>
+                        <p style="color: #666; margin: 5px 0;">
+                            ${escapeHtml(customer.sns_media_name)}: ${escapeHtml(customer.sns_id)}
+                        </p>
+                        <span class="status-badge" style="background-color: ${statusColor}">
+                            ${escapeHtml(customer.status_name)}
+                        </span>
+                    </div>
+                    <button id="addAppointmentBtn" class="btn btn-success">追加</button>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 10px;">基本情報</h3>
+                    <p><strong>登録日:</strong> ${formatDate(customer.registration_date)}</p>
+                    ${customer.notes ? `<p><strong>メモ:</strong> ${escapeHtml(customer.notes)}</p>` : ''}
+                </div>
+                
+                <div class="appointment-list">
+                    <h3 style="margin-bottom: 15px;">履歴 (${customer.appointments.length}/20)</h3>
+                    ${customer.appointments.length > 0 ? 
+                        customer.appointments.map(apt => `
+                            <div class="appointment-item">
+                                <div class="appointment-status">${escapeHtml(apt.status)}</div>
+                                <div class="appointment-header">
+                                    <span class="appointment-date">${apt.status === 'アポ実施' || apt.status === '成約' ? formatDateTime(apt.appointment_date) : '記録日: ' + formatDateTime(apt.appointment_date)}</span>
+                                </div>
+                                <p><strong>実施者:</strong> ${escapeHtml(apt.staff_name)}${currentUser.role_name !== 'マーケ' && apt.business_name ? ` (${escapeHtml(apt.business_name)})` : ''}</p>
+                                <p style="margin-top: 8px; white-space: pre-wrap;">${escapeHtml(apt.result_content)}</p>
+                                ${apt.created_by_id === currentUser.id ? `
+                                    <button class="btn btn-danger btn-sm" style="margin-top: 10px;" onclick="deleteAppointment(${apt.id})">削除</button>
+                                ` : ''}
+                            </div>
+                        `).join('') : 
+                        '<p style="color: #666; text-align: center; padding: 20px;">履歴はありません</p>'
+                    }
+                </div>
+            `;
+            
+            // アポ追加ボタンのイベントリスナー
+            document.getElementById('addAppointmentBtn').addEventListener('click', () => {
+                document.getElementById('addAppointmentModal').style.display = 'block';
+            });
+        }
+
+        // 検索入力イベント
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                searchCustomers(e.target.value);
+            }, 300);
+        });
+
+        // 戻るボタン
+        document.getElementById('backToSearchBtn').addEventListener('click', () => {
+            document.getElementById('customerDetailSection').classList.add('hidden');
+            document.getElementById('mainSection').classList.remove('hidden');
+        });
+
+        // 新規顧客登録モーダル
+        document.getElementById('addCustomerBtn').addEventListener('click', () => {
+            document.getElementById('addCustomerModal').style.display = 'block';
+        });
+
+        document.getElementById('closeAddCustomerModal').addEventListener('click', () => {
+            document.getElementById('addCustomerModal').style.display = 'none';
+        });
+
+        // 新規顧客登録フォーム
+        document.getElementById('addCustomerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const snsMediaValue = document.getElementById('newSnsMedia').value;
+                const statusValue = document.getElementById('newStatus').value;
+                
+                console.log('SNS Media Value:', snsMediaValue);
+                console.log('Status Value:', statusValue);
+                
+                if (!snsMediaValue || !statusValue) {
+                    showError('addCustomerError', 'SNS媒体またはステータスを選択してください');
+                    return;
+                }
+                
+                const formData = {
+                    sns_media_id: parseInt(snsMediaValue),
+                    sns_id: document.getElementById('newSnsId').value,
+                    real_name: document.getElementById('newRealName').value,
+                    status_id: parseInt(statusValue),
+                    notes: document.getElementById('newNotes').value || ''
+                };
+                
+                console.log('Form Data:', formData);
+                
+                const response = await apiCall('/api/customer', {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response && response.ok) {
+                    document.getElementById('addCustomerModal').style.display = 'none';
+                    document.getElementById('addCustomerForm').reset();
+                    await searchCustomers(document.getElementById('searchInput').value);
+                    showSuccess('顧客を登録しました');
+                } else {
+                    let errorMessage = '登録に失敗しました';
+                    try {
+                        const error = await response.json();
+                        console.error('API Error:', error);
+                        
+                        // エラーメッセージの取得を改善
+                        if (error.detail) {
+                            if (typeof error.detail === 'string') {
+                                errorMessage = error.detail;
+                            } else if (Array.isArray(error.detail)) {
+                                errorMessage = error.detail.map(err => 
+                                    err.msg || err.message || JSON.stringify(err)
+                                ).join(', ');
+                            } else if (typeof error.detail === 'object') {
+                                errorMessage = JSON.stringify(error.detail);
+                            }
+                        } else if (error.message) {
+                            errorMessage = error.message;
+                        }
+                    } catch (e) {
+                        console.error('Error parsing response:', e);
+                        errorMessage = `HTTPエラー: ${response.status} ${response.statusText}`;
+                    }
+                    
+                    showError('addCustomerError', errorMessage);
+                }
+            } catch (error) {
+                console.error('Submit Error:', error);
+                showError('addCustomerError', 'エラーが発生しました: ' + error.message);
+            }
+        });
+
+        // アポイントメント追加モーダル
+        document.getElementById('closeAddAppointmentModal').addEventListener('click', () => {
+            document.getElementById('addAppointmentModal').style.display = 'none';
+        });
+
+        // アポイントメント追加フォーム
+        document.getElementById('addAppointmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const status = document.getElementById('appointmentStatus').value;
+                let appointmentDateTime;
+                
+                // アポ実施または成約の場合は入力された日時を使用
+                if (status === 'アポ実施' || status === '成約') {
+                    const date = document.getElementById('appointmentDate').value;
+                    const time = document.getElementById('appointmentTime').value;
+                    if (date && time) {
+                        appointmentDateTime = new Date(`${date}T${time}`).toISOString();
+                    } else if (date) {
+                        appointmentDateTime = new Date(`${date}T00:00:00`).toISOString();
+                    } else {
+                        // 日付が未入力の場合は現在時刻を使用
+                        appointmentDateTime = new Date().toISOString();
+                    }
+                } else {
+                    // その他のステータスの場合は現在時刻を使用
+                    appointmentDateTime = new Date().toISOString();
+                }
+                
+                const formData = {
+                    appointment_date: appointmentDateTime,
+                    staff_name: document.getElementById('staffName').value,
+                    status: status,
+                    result_content: document.getElementById('resultContent').value
+                };
+                
+                console.log('Sending appointment data:', formData);
+                
+                const response = await apiCall(`/api/customer/${currentCustomerId}/appointment`, {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response && response.ok) {
+                    document.getElementById('addAppointmentModal').style.display = 'none';
+                    document.getElementById('addAppointmentForm').reset();
+                    document.getElementById('appointmentDateFields').style.display = 'none';
+                    await showCustomerDetail(currentCustomerId);
+                    showSuccess('履歴を追加しました');
+                } else {
+                    let errorMessage = '追加に失敗しました';
+                    try {
+                        const error = await response.json();
+                        console.error('API Error Response:', error);
+                        
+                        if (error.detail) {
+                            if (typeof error.detail === 'string') {
+                                errorMessage = error.detail;
+                            } else if (Array.isArray(error.detail)) {
+                                errorMessage = error.detail.map(err => {
+                                    if (err.loc && err.msg) {
+                                        return `${err.loc.join(' → ')}: ${err.msg}`;
+                                    }
+                                    return err.msg || err.message || JSON.stringify(err);
+                                }).join('\n');
+                            } else if (typeof error.detail === 'object') {
+                                errorMessage = JSON.stringify(error.detail, null, 2);
+                            }
+                        } else if (error.message) {
+                            errorMessage = error.message;
+                        }
+                    } catch (e) {
+                        console.error('Error parsing response:', e);
+                        errorMessage = `HTTPエラー: ${response.status} ${response.statusText}`;
+                    }
+                    
+                    showError('addAppointmentError', errorMessage);
+                }
+            } catch (error) {
+                console.error('Submit Error:', error);
+                showError('addAppointmentError', 'エラーが発生しました: ' + error.message);
+            }
+        });
+
+        // ユーティリティ関数
+        function showError(elementId, message) {
+            console.error('Error:', message); // コンソールにも出力
+            
+            if (elementId) {
+                const errorElement = document.getElementById(elementId);
+                if (errorElement) {
+                    // エラーメッセージが[object Object]の場合は、JSONとして表示
+                    if (message === '[object Object]' || (typeof message === 'object' && message !== null)) {
+                        errorElement.textContent = 'エラー: ' + JSON.stringify(message, null, 2);
+                    } else {
+                        errorElement.textContent = message;
+                    }
+                    errorElement.classList.remove('hidden');
+                    setTimeout(() => errorElement.classList.add('hidden'), 10000); // 10秒表示
+                } else {
+                    alert('エラー: ' + (typeof message === 'object' ? JSON.stringify(message) : message));
+                }
+            } else {
+                alert('エラー: ' + (typeof message === 'object' ? JSON.stringify(message) : message));
+            }
+        }
+
+        function showSuccess(message) {
+            // 簡易的な成功メッセージ表示
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            successDiv.style.position = 'fixed';
+            successDiv.style.top = '20px';
+            successDiv.style.right = '20px';
+            successDiv.style.zIndex = '1001';
+            
+            document.body.appendChild(successDiv);
+            setTimeout(() => successDiv.remove(), 3000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('ja-JP');
+        }
+
+        function formatDateTime(dateString) {
+            return new Date(dateString).toLocaleString('ja-JP');
+        }
+
+        // モーダルの外側クリックで閉じる
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // 初期化
+        if (authToken) {
+            loadCurrentUser().then(() => {
+                showMainSection();
+            });
+        }
+    </script>
+</body>
+</html>
